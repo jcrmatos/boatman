@@ -1,3 +1,8 @@
+0.0.3 2015-05-02 ::
+
+    Correct problem with git dist.
+	
+	
 0.0.2 2015-05-02 ::
 
     Code cleanup.

@@ -1,0 +1,5 @@
+future
+py2exe
+Sphinx
+twine
+wheel
