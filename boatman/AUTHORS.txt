@@ -1,6 +1,2 @@
-Code authors
-============
 
-::
-
-    Joao Matos <jcrmatos@gmail.com>
+    Joao Carlos Roseta Matos <jcrmatos@gmail.com>

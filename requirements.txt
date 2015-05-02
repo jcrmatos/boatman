@@ -1,1 +1,2 @@
-colorama>=0.2.7
+colorama
+future

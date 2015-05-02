@@ -1,5 +1,16 @@
-boatman
+boatman 
 =======
+
+A simple logic game.
+
+Portuguese
+
+Um jogo de l√≥gica simples.
+
+Description, features and To do
+-------------------------------
+
+**Description**
 
 A simple logic game.
 A boatman is comissioned to take a Wolf, a Goat and some Pasture to the other margin.
@@ -9,20 +20,47 @@ As soon as he leaves, the animals will try to eat.
 The order of transportation is important because the Wolf eats the Goat and the Goat eats the Pasture, but the Wolf doesn't eat the Pasture.
 
 Portuguese
-Um jogo de lÛgica simples.
-Um barqueiro È contratado para levar um Lobo, uma Cabra e Pasto para a outra margem.
-SÛ pode levar um de cada vez.
-Enquanto est· na doca nada acontece.
+
+Um jogo de l√≥gica simples.
+Um barqueiro √© contratado para levar um Lobo, uma Cabra e Pasto para a outra margem.
+S√≥ pode levar um de cada vez.
+Enquanto est√° na doca nada acontece.
 Assim que sai, os animais tentam comer.
-A ordem de transporte È importante porque o Lobo come a Cabra e a Cabra come o Pasto, mas o Lobo n„o come o Pasto.
+A ordem de transporte √© importante porque o Lobo come a Cabra e a Cabra come o Pasto, mas o Lobo n√£o come o Pasto.
 
-Resources
----------
+**Features:**
 
-* `Repository <https://github.com/jcrmatos/Boatman>`_
+* Easy to play.
+* Simple game.
 
-Contributing
-------------
+**To do**
+
+* Add sound.
+* GUI version.
+
+Installation and usage
+----------------------
+
+**Installation**
+
+.. code:: bash
+
+    $ pip install boatman
+
+**Usage**
+
+.. code:: bash
+
+    $ boatman
+
+Resources and contributing
+--------------------------
+
+**Resources**
+
+* `Repository <https://github.com/jcrmatos/boatman>`_
+
+**Contributing**
 
 1. Fork the `repository`_ on GitHub.
 2. Make a branch of master and commit your changes to it.
@@ -30,4 +68,6 @@ Contributing
    ``Name <email@domain.com>``
 4. Submit a Pull Request to the master branch on GitHub.
 
-.. _repository: https://github.com/jcrmatos/Boatman
+.. _repository: https://github.com/jcrmatos/boatman
+
+Copyright 2009-2015 Joao Carlos Roseta Matos. Licensed under the GNU General Public License v2 or later (GPLv2+).

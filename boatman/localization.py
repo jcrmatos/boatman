@@ -1,63 +1,85 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright 2009-2015 Joao Carlos Roseta Matos
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """Localization."""
 
 # Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from locale import getdefaultlocale
-from colorama import init, Style, Fore, Back
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+# import builtins  # Python 3 compatibility
+# import future  # Python 3 compatibility
+# import io  # Python 3 compatibility
+import locale
+
+import colorama as clrm
 
 
 def sys_lang():
     """Get system language."""
-    lang = getdefaultlocale()
-    #lang = 'EN'  # only for testing
+    lang = locale.getdefaultlocale()
+    # lang = 'EN'  # only for testing
     if 'pt_' in lang[0]:  # Portuguese
         return 'PT'
     else:  # English
         return 'EN'
 
-
 LANG = sys_lang()
+
 if LANG == 'PT':  # Portuguese
-    TITLE = ('----------------------- ' +
-             Style.BRIGHT + 'Barqueiro' + Style.DIM +
-             ' -----------------------')
-    QUIT = 'S'
-    ITEMS = ['L', 'C', 'P']
-    PROMPT = (Style.BRIGHT + 'L' + Style.DIM + '(obo), ' +
-              Style.BRIGHT + 'C' + Style.DIM + '(abra), ' +
-              Style.BRIGHT + 'P' + Style.DIM + '(asto), ' +
-              Style.BRIGHT + 'S' + Style.DIM + '(air)')
-    WOLF = 'L'
-    GOAT = 'C'
-    PASTURE = 'P'
-    WIN = Style.BRIGHT + 'Parabéns, ganhou!' + Style.RESET_ALL
-    WOLF_ATE_GOAT = 'O lobo comeu a cabra. Perdeu :('
-    GOAT_ATE_PASTURE = 'A cabra comeu o pasto. Perdeu :('
     GAME_OVER = 'Fim do jogo.'
-else:  # English
-    TITLE = ('----------------------- ' +
-             Style.BRIGHT + 'Boatman' + Style.DIM +
-             ' -----------------------')
-    QUIT = 'Q'
-    ITEMS = ['W', 'G', 'P']
-    PROMPT = (Style.BRIGHT + 'W' + Style.DIM + '(olf), ' +
-              Style.BRIGHT + 'G' + Style.DIM + '(oat), ' +
-              Style.BRIGHT + 'P' + Style.DIM + '(asture), ' +
-              Style.BRIGHT + 'Q' + Style.DIM + '(uit)')
-    WOLF = 'W'
-    GOAT = 'G'
+    GOAT = 'C'
+    GOAT_ATE_PASTURE = 'A cabra comeu o pasto. Perdeu :('
+    ITEMS = ['L', 'C', 'P']
     PASTURE = 'P'
-    WIN = 'Congratulations, you won!'
-    WOLF_ATE_GOAT = 'The wolf ate the goat. You lose :('
-    GOAT_ATE_PASTURE = 'The goat ate the pasture. You lose :('
+    PROMPT = (clrm.Style.BRIGHT + 'L' + clrm.Style.DIM + '(obo), ' +
+              clrm.Style.BRIGHT + 'C' + clrm.Style.DIM + '(abra), ' +
+              clrm.Style.BRIGHT + 'P' + clrm.Style.DIM + '(asto), ' +
+              clrm.Style.BRIGHT + 'S' + clrm.Style.DIM + '(air)')
+    QUIT = 'S'
+    TITLE = ('----------------------- ' +
+             clrm.Style.BRIGHT + 'Barqueiro' + clrm.Style.DIM +
+             ' -----------------------')
+    WIN = clrm.Style.BRIGHT + 'Parabéns, ganhou!' + clrm.Style.RESET_ALL
+    WOLF = 'L'
+    WOLF_ATE_GOAT = 'O lobo comeu a cabra. Perdeu :('
+else:  # English
     GAME_OVER = 'Game over.'
+    GOAT = 'G'
+    GOAT_ATE_PASTURE = 'The goat ate the pasture. You lose :('
+    ITEMS = ['W', 'G', 'P']
+    PASTURE = 'P'
+    PROMPT = (clrm.Style.BRIGHT + 'W' + clrm.Style.DIM + '(olf), ' +
+              clrm.Style.BRIGHT + 'G' + clrm.Style.DIM + '(oat), ' +
+              clrm.Style.BRIGHT + 'P' + clrm.Style.DIM + '(asture), ' +
+              clrm.Style.BRIGHT + 'Q' + clrm.Style.DIM + '(uit)')
+    QUIT = 'Q'
+    TITLE = ('----------------------- ' +
+             clrm.Style.BRIGHT + 'Boatman' + clrm.Style.DIM +
+             ' -----------------------')
+    WIN = 'Congratulations, you won!'
+    WOLF = 'W'
+    WOLF_ATE_GOAT = 'The wolf ate the goat. You lose :('
 
 
 if __name__ == '__main__':
-    #import doctest
-    #doctest.testmod(verbose=True)
+    # import doctest
+    # doctest.testmod(verbose=True)
     pass
