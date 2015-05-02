@@ -1,3 +1,8 @@
+0.0.5 2015-05-02 ::
+
+    Update .gitignore.
+
+
 0.0.4 2015-05-02 ::
 
     Update build system.

@@ -32,7 +32,7 @@ import datetime as dt
 
 
 APP_NAME = 'boatman'
-APP_VERSION = '0.0.4'
+APP_VERSION = '0.0.5'
 APP_LICENSE = 'GNU General Public License v2 or later (GPLv2+)'
 APP_AUTHOR = 'Joao Carlos Roseta Matos'
 APP_EMAIL = 'jcrmatos@gmail.com'

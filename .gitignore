@@ -29,3 +29,5 @@ venv/
 
 # project specific
 boatman/__pycache__/
+boatman/doc/
+boatman/pythonhosted.org/*.zip

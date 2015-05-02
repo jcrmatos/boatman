@@ -135,7 +135,7 @@ echo *** Py3 compat checkers
 echo.
 for %%a in (%PROJECT%\*.py) do pylint -r n --py3k %%a
 echo.
-echo *** If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo *** If there were errors or warnings (No config file found... is OK) press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
 echo *** If there weren't any errors above, consider an additional check by running the application with python -3 %PROJECT%
 echo.
 pause
