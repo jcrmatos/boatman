@@ -217,6 +217,7 @@ def upd_usage_in_readme():
         with io.open(appinfo.APP_NAME +
                      '/usage.txt', encoding=SYS_ENC) as file_:
             usage_text = file_.read()
+            usage_text = usage_text[len(os.linesep) - 1:]  # remove 1st line
 
         with io.open('README.rst', encoding=SYS_ENC) as file_:
             text = file_.readlines()

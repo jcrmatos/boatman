@@ -16,7 +16,10 @@ rem You should have received a copy of the GNU General Public License
 rem along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 set OLDPATH=%PATH%
+set OLDPYTHONPATH=%PYTHONPATH%
+
 set REBUILD_REFERENCE=YES
+set CHECK_PY3_COMPATIBILITY=YES
 
 if "%1"=="-h" goto :HELP
 if "%1"=="help" goto :HELP
@@ -57,7 +60,7 @@ if "%1"=="pypi" goto :PYPI
 if "%1"=="pypitest" goto :PYPITEST
 
 echo.
-echo *** Cleanup and update basic info files
+echo *** Clean
 echo.
 if exist app_ver.txt del app_ver.txt
 if exist app_name.txt del app_name.txt
@@ -80,15 +83,19 @@ if exist %PROJECT%\doc rd /s /q %PROJECT%\doc
 
 if "%1"=="clean" goto :EXIT
 
+echo.
+echo *** Update some files
+echo.
+
 if "%PYTHON_EASYSETUP_AUTHOR%"=="" goto :NO_COPYRIGHT_UPD
 
+:COPYRIGHT_UPD
 python setup_utils.py check_copyright()
 if ERRORLEVEL==1 goto :EXIT
 
 python setup_utils.py update_copyright()
 
 :NO_COPYRIGHT_UPD
-
 python setup_utils.py upd_usage_in_readme()
 
 copy /y README.rst %PROJECT%\README.txt > nul
@@ -108,6 +115,33 @@ if not exist py_ver.txt goto :EXIT
 for /f "delims=" %%f in (py_ver.txt) do set PY_VER=%%f
 del py_ver.txt
 
+:CHECKERS
+echo.
+echo *** Checkers
+echo.
+
+for %%a in (%PROJECT%\*.py) do flake8 %%a
+rem set PYTHONPATH=%PYTHONPATH%:%PROJECT%
+rem for %%a in (%PROJECT%\*.py) do pylint -r n %%a
+echo.
+echo *** If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo.
+pause
+
+if "%CHECK_PY3_COMPATIBILITY%"=="" goto :NO_CHECK_PY3_COMPAT
+
+echo.
+echo *** Py3 compat checkers
+echo.
+for %%a in (%PROJECT%\*.py) do pylint -r n --py3k %%a
+echo.
+echo *** If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo *** If there weren't any errors above, consider an additional check by running the application with python -3 %PROJECT%
+echo.
+pause
+
+:NO_CHECK_PY3_COMPAT
+cls
 if "%1"=="doc" goto :DOC
 
 :TEST
@@ -133,10 +167,11 @@ py.test --cov-report term-missing --cov %PROJECT% -v test
 if ERRORLEVEL==1 goto :EXIT
 
 if "%1"=="test" goto :EXIT
+pause
+cls
 
 :DOC
 if not exist doc goto :NO_DOC
-pause
 
 echo.
 echo *** Sphinx
@@ -333,9 +368,13 @@ rem python setup.py sdist bdist_wheel upload -r test
 
 :EXIT
 set PATH=%OLDPATH%
+set PYTHONPATH=%OLDPYTHONPATH%
 set OLDPATH=
+set OLDPYTHONPATH=
 set PY_VER=
 set APP_VER=
 set PROJ_TYPE=
 set PROJECT=
 set SPHINXOPTS=
+set REBUILD_REFERENCE=
+set CHECK_PY3_COMPATIBILITY=

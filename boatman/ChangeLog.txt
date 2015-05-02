@@ -1,3 +1,8 @@
+0.0.4 2015-05-02 ::
+
+    Update build system.
+
+
 0.0.3 2015-05-02 ::
 
     Correct problem with git dist.
