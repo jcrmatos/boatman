@@ -45,7 +45,7 @@ echo build src        builds sdist (zip on Windows, tar.gz on GNU Linux in the f
 echo build test       run tests
 echo build whl        builds bdist_wheel (whl)
 echo.
-echo See requirements-dev.txt for build requirements.
+echo Before runnning build.cmd for the first time, you should execute pip install -r requirements-dev.txt to install it's requirements.
 echo.
 goto :EXIT
 
@@ -97,6 +97,7 @@ python setup_utils.py update_copyright()
 
 :NO_COPYRIGHT_UPD
 python setup_utils.py upd_usage_in_readme()
+python setup_utils.py collect_to_do()
 
 copy /y README.rst %PROJECT%\README.txt > nul
 copy /y LICENSE.rst %PROJECT%\LICENSE.txt > nul
@@ -117,26 +118,28 @@ del py_ver.txt
 
 :CHECKERS
 echo.
-echo *** Checkers
+echo *** PEP8 checker
 echo.
 
 for %%a in (%PROJECT%\*.py) do flake8 %%a
 rem set PYTHONPATH=%PYTHONPATH%:%PROJECT%
 rem for %%a in (%PROJECT%\*.py) do pylint -r n %%a
 echo.
-echo *** If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo *****
+echo If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
 echo.
 pause
 
 if "%CHECK_PY3_COMPATIBILITY%"=="" goto :NO_CHECK_PY3_COMPAT
 
 echo.
-echo *** Py3 compat checkers
+echo *** Python 3 compatibility checker
 echo.
 for %%a in (%PROJECT%\*.py) do pylint -r n --py3k %%a
 echo.
-echo *** If there were errors or warnings (No config file found... is OK) press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
-echo *** If there weren't any errors above, consider an additional check by running the application with python -3 %PROJECT%
+echo *****
+echo If there were errors or warnings (No config file found... is OK) press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo If there weren't any errors above, consider an additional check by running the application with python -3 %PROJECT%
 echo.
 pause
 
@@ -201,9 +204,9 @@ python ..\setup_utils.py prep_rst2pdf()
 cmd /c make latex
 cd _build\latex
 pdflatex.exe %PROJECT%.tex
-echo ***
+echo.
 echo *** Repeat to correct references
-echo ***
+echo.
 pdflatex.exe %PROJECT%.tex
 copy /y %PROJECT%.pdf ..\..\..\%PROJECT%\doc > nul
 cd ..\..
@@ -220,10 +223,10 @@ python setup_utils.py create_doc_zip()
 
 if "%1"=="doc" goto :EXIT
 
-:NO_DOC
 pause
 cls
 
+:NO_DOC
 if "%1"=="cxf" goto :CXF
 if "%1"=="dumb" goto :DUMB
 if "%1"=="egg" goto :EGG
@@ -308,7 +311,8 @@ goto :MSG
 
 :MSG
 echo.
-echo *** If there were filesystem errors (eg. directory not empty), random syntax or unicode errors, try repeating the build up to 3 times. At least on my system that works.
+echo *****
+echo If there were filesystem errors (eg. directory not empty), random syntax or Unicode errors, try repeating the build up to 3 times.
 echo.
 goto :EXIT
 
@@ -317,12 +321,13 @@ echo.
 echo *** CXF
 echo.
 echo Not working yet...
-rem python cxf_setup.py build bdist_msi
-rem python cxf_setup.py build_exe
-rem cxfreeze cxf_setup.py build_exe
-rem echo ***
+rem python setup_cxf.py build
+rem python setup_cxf.py build bdist_msi
+rem python setup_cxf.py build_exe
+rem cxfreeze setup_cxf.py build_exe
+rem echo.
 rem echo *** Copy datafiles
-rem echo ***
+rem echo.
 rem copy build\exe.win32-%PY_VER%\%PROJECT%\*.* build\exe.win32-%PY_VER%
 goto :EXIT
 
@@ -330,11 +335,20 @@ goto :EXIT
 echo.
 echo *** PY2EXE
 echo.
+echo *** py2exe requires commenting unicode import in appinfo.py
+echo.
+python setup_utils.py comment_import_for_py2exe('appinfo.py')
+copy /y appinfo.py %PROJECT% > nul
+pause
 python setup_py2exe.py py2exe
 if exist dist\__main__.exe ren dist\__main__.exe %PROJECT%.exe
-
 echo.
-echo *** Check if you need to add any files or directories to DATA_FILES_PY2EXE in setup_py2exe.py.
+echo *** Uncommenting unicode import in appinfo.py
+echo.
+python setup_utils.py uncomment_import_for_py2exe('appinfo.py')
+copy /y appinfo.py %PROJECT% > nul
+echo *****
+echo Check if you need to add any files or directories to DATA_FILES_PY2EXE in setup_py2exe.py.
 echo.
 goto :EXIT
 

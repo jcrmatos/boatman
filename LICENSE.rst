@@ -1,6 +1,6 @@
 ::
 
-        boatman.
+        boatman - A simple logic game.
         Copyright 2009-2015 Joao Carlos Roseta Matos
 
         This program is free software; you can redistribute it and/or modify

@@ -39,16 +39,13 @@ Pasto, mas o Lobo não come o Pasto.
 """
 
 # Python 3 compatibility
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-import builtins  # Python 3 compatibility
-# import future  # Python 3 compatibility
 # import io  # Python 3 compatibility
 import sys
 
+from builtins import input  # Python 3 compatibility
 import colorama as clrm
 
 import ansi
@@ -190,7 +187,7 @@ def main():
         choice = ''
         while choice not in ALLOWED_KEYS:
             ansi.print_at(14, 1, lcl.PROMPT)
-            choice = builtins.input('> ').upper()
+            choice = input('> ').upper()
             # ToDo: check for unicode and clear
             ansi.clear_line(14)  # must clear line before actual input (!?)
 
@@ -215,3 +212,7 @@ if __name__ == '__main__':
     # import doctest
     # doctest.testmod(verbose=True)
     sys.exit(main())
+
+
+# ToDo: add sound
+# ToDo: gui version

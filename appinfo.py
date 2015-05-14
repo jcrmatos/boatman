@@ -19,20 +19,17 @@
 """Application basic information."""
 
 # Python 3 compatibility
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-# sometimes py2exe requires the following import to be commented
-# from __future__ import unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-# import builtins  # Python 3 compatibility
 import datetime as dt
-# import future  # Python 3 compatibility
 # import io  # Python 3 compatibility
+
+# from builtins import input  # Python 3 compatibility
 
 
 APP_NAME = 'boatman'
-APP_VERSION = '0.0.5'
+APP_VERSION = '0.0.6'
 APP_LICENSE = 'GNU General Public License v2 or later (GPLv2+)'
 APP_AUTHOR = 'Joao Carlos Roseta Matos'
 APP_EMAIL = 'jcrmatos@gmail.com'

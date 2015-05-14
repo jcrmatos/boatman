@@ -19,16 +19,14 @@
 """Localization."""
 
 # Python 3 compatibility
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-# import builtins  # Python 3 compatibility
-# import future  # Python 3 compatibility
 # import io  # Python 3 compatibility
 import locale
+import sys
 
+# from builtins import input  # Python 3 compatibility
 import colorama as clrm
 
 
@@ -42,6 +40,10 @@ def sys_lang():
         return 'EN'
 
 LANG = sys_lang()
+
+FS_ENC = sys.getfilesystemencoding()
+INPUT_ENC = sys.stdin.encoding
+UTF_ENC = 'utf-8'
 
 if LANG == 'PT':  # Portuguese
     GAME_OVER = 'Fim do jogo.'

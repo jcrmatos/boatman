@@ -2,9 +2,15 @@ language: python
 python:
   - "2.7"
   - "3.4"
-install: pip install --use-mirrors -r requirements.txt
-script:
-  py.test --cov boatman test/
+  - "pypy"
+  - "pypy3"
+before_install: pip install pytest-cov
+install:
+  - "pip install -r requirements.txt"
+  #- "if [[ $TRAVIS_PYTHON_VERSION != pypy && $TRAVIS_PYTHON_VERSION != pypy3 ]]; then pip install -r requirements.txt ; fi"
+  #- "if [ $TRAVIS_PYTHON_VERSION = pypy ]; then pip install git+https://bitbucket.org/pypy/numpy.git ; fi"
+  #- "if [ $TRAVIS_PYTHON_VERSION = pypy3 ]; then pip install git+https://bitbucket.org/pypy/numpy.git ; fi"
+script: py.test --cov-report term-missing --cov boatman -v test
 notifications:
   email:
     on_success: always

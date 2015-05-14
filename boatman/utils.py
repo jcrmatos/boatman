@@ -19,16 +19,14 @@
 """Utilities."""
 
 # Python 3 compatibility
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-# import builtins  # Python 3 compatibility
-# import future  # Python 3 compatibility
 # import io  # Python 3 compatibility
 import os
 import sys
+
+# from builtins import input  # Python 3 compatibility
 
 
 def run(win_cmd='', x_cmd=''):
