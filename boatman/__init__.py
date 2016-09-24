@@ -21,7 +21,7 @@
 
 __author__ = 'Joao Carlos Roseta Matos'  # type: str
 __license__ = 'GNU General Public License v3 or later (GPLv3+)'  # type: str
-__version__ = '0.0.7'  # type: str
+__version__ = '0.0.8'  # type: str
 
 
 import datetime as dt

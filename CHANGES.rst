@@ -1,3 +1,8 @@
+0.0.8 2016-09-24 ::
+
+    Remove old files.
+
+
 0.0.7 2016-09-24 ::
 
     Add pause to see boat move.
