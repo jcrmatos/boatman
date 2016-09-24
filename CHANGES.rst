@@ -1,3 +1,8 @@
+0.0.11 2016-09-24 ::
+
+    Remove *.rst from boatman\boatman dir.
+
+
 0.0.10 2016-09-24 ::
 
     Correct CHANGES.rst.
