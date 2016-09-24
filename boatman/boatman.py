@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009-2015 Joao Carlos Roseta Matos
+# Copyright 2009-2016 Joao Carlos Roseta Matos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,104 +38,142 @@ A ordem de transporte é importante porque o Lobo come a Cabra e a Cabra come o
 Pasto, mas o Lobo não come o Pasto.
 """
 
-# Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 
-# import io  # Python 3 compatibility
-import sys
+from time import sleep
+from typing import Dict, List, Optional, Tuple
 
-from builtins import input  # Python 3 compatibility
-import colorama as clrm
+from colorama import init, Style, Fore, Back
 
-import ansi
+from ansi_helper import clear_screen, set_print_pos, print_at, clear_line
 import localization as lcl
 
 
-ALLOWED_KEYS = lcl.ITEMS + [lcl.QUIT]
-BOAT = r'\___/'
-NO_BOAT = '     '
-DOCK = clrm.Style.BRIGHT + clrm.Fore.YELLOW + '===' + clrm.Style.RESET_ALL
-SEA = (clrm.Back.BLUE +
-       '                                                   ' +
-       clrm.Back.RESET)
-# some auxiliary constants to help reading the code
-RIGHT = True
-LEFT = False
+ALLOWED_KEYS = lcl.ITEMS + (lcl.QUIT,)  # type: Tuple[str, str, str, str]
+BOAT = r'\___/'  # type: str
+NO_BOAT = ' ' * len(BOAT)  # type: str
+DOCK = Style.BRIGHT + Fore.YELLOW + '===' + Style.RESET_ALL  # type: str
+SEA = (Back.BLUE + ' ' * 51 + Back.RESET)  # type: str
+RIGHT = True  # type: bool
+LEFT = False  # type: bool
 
 
-def fireworks():
+def fireworks() -> None:
     """Print fireworks."""
-    ansi.print_at(2, 48, clrm.Style.BRIGHT + r'\ | /')
-    ansi.print_at(3, 47, '-- * --')
-    ansi.print_at(4, 48, '/ | \\')
+    print_at(2, 48, Style.BRIGHT + r'\ | /')
+    print_at(3, 47, '-- * --')
+    print_at(4, 48, '/ | \\')
 
-    ansi.print_at(3, 38, clrm.Fore.RED + r'\ | /')
-    ansi.print_at(4, 37, '-- * --')
-    ansi.print_at(5, 38, '/ | \\')
-    ansi.print_at(4, 28, clrm.Fore.YELLOW + r'\ | /')
-    ansi.print_at(5, 27, '-- * --')
-    ansi.print_at(6, 28, '/ | \\')
+    print_at(3, 38, Fore.RED + r'\ | /')
+    print_at(4, 37, '-- * --')
+    print_at(5, 38, '/ | \\')
+    print_at(4, 28, Fore.YELLOW + r'\ | /')
+    print_at(5, 27, '-- * --')
+    print_at(6, 28, '/ | \\')
 
-    ansi.print_at(7, 37, clrm.Fore.MAGENTA + '*')
-    ansi.print_at(8, 45, clrm.Fore.GREEN + '*')
-    ansi.print_at(9, 40, clrm.Fore.CYAN + '*' + clrm.Style.RESET_ALL)
+    print_at(7, 37, Fore.MAGENTA + '*')
+    print_at(8, 45, Fore.GREEN + '*')
+    print_at(9, 40, Fore.CYAN + '*' + Style.RESET_ALL)
 
 
-def upd_status(cur_boat_pos, left_items, right_items):
-    """Update game status, showing a message and if won some fireworks."""
-    if right_items == lcl.ITEMS:  # win
-        ansi.print_at(5, 1, lcl.WIN)
+def upd_status(cur_boat_pos: bool, left_items: List[str],
+               right_items: List[str]) -> Optional[str]:
+    """Update game status, showing a message and if won some fireworks.
+
+    :param cur_boat_pos: current boat position (LEFT=False, RIGHT=True).
+    :param left_items: items in left dock.
+    :param right_items: items in right dock.
+    :returns: None or localized game over message.
+    """
+    assert all([isinstance(cur_boat_pos, bool), isinstance(left_items, list),
+                isinstance(right_items, list)])
+
+    conditions = {
+        'win': right_items == list(lcl.ITEMS),
+        'wolf_ate_goat': all([lcl.WOLF in left_items, lcl.GOAT in left_items,
+                              cur_boat_pos == RIGHT])
+                         or
+                         all([lcl.WOLF in right_items, lcl.GOAT in right_items,
+                              cur_boat_pos == LEFT]),
+        'wolf_ate_goat': all([lcl.WOLF in left_items, lcl.GOAT in left_items,
+                              cur_boat_pos == RIGHT])
+                         or
+                         all([lcl.WOLF in right_items, lcl.GOAT in right_items,
+                              cur_boat_pos == LEFT]),
+        'goat_ate_pasture': all([lcl.GOAT in left_items,
+                                 lcl.PASTURE in left_items,
+                                 cur_boat_pos == RIGHT])
+                            or
+                            all([lcl.GOAT in right_items,
+                                 lcl.PASTURE in right_items,
+                                 cur_boat_pos == LEFT])
+    }  # type: Dict[str, bool]
+
+    if conditions['win']:
+        print_at(5, 1, lcl.WIN)
         fireworks()
         return lcl.GAME_OVER
-    elif ((lcl.WOLF in left_items and
-           lcl.GOAT in left_items and
-           cur_boat_pos == RIGHT) or
-          (lcl.WOLF in right_items and
-           lcl.GOAT in right_items and
-           cur_boat_pos == LEFT)):  # loss
-        ansi.print_at(5, 1, lcl.WOLF_ATE_GOAT)
+    elif conditions['wolf_ate_goat']:  # loss
+        print_at(5, 1, lcl.WOLF_ATE_GOAT)
         return lcl.GAME_OVER
-    elif ((lcl.GOAT in left_items and
-           lcl.PASTURE in left_items and
-           cur_boat_pos == RIGHT) or
-          (lcl.GOAT in right_items and
-           lcl.PASTURE in right_items and
-           cur_boat_pos == LEFT)):  # loss
-        ansi.print_at(5, 1, lcl.GOAT_ATE_PASTURE)
+    elif conditions['goat_ate_pasture']:  # loss
+        print_at(5, 1, lcl.GOAT_ATE_PASTURE)
         return lcl.GAME_OVER
 
 
-def move_boat(to_pos):
-    """Move boat to right/left dock, and returns position after move."""
+def bright(items: List[str]) -> str:
+    """Brighten and concatenate items.
+
+    :param items: items to brighten.
+    :returns: brightened and concatenated items.
+    """
+    return Style.BRIGHT + ''.join(items) + Style.DIM
+
+
+def move_boat(to_pos: bool) -> bool:
+    """Move boat to right/left dock, and returns position after move.
+
+    :param to_pos: position to move boat to (LEFT=False, RIGHT=True).
+    :returns: boat's current position.
+    """
+    assert isinstance(to_pos, bool)
     if to_pos == RIGHT:
-        for col in range(5, 51):
-            ansi.print_at(11, col - 1, NO_BOAT)
-            ansi.print_at(11, col, BOAT)
-        return RIGHT
+        for col in range(5, 51):  # type: int
+            print_at(11, col - 1, NO_BOAT)
+            print_at(11, col, BOAT)
+            sleep(.02)
     else:
-        for col in range(50, 4, -1):
-            ansi.print_at(11, col, NO_BOAT)
-            ansi.print_at(11, col - 1, BOAT)
-        return LEFT
+        for col in range(50, 4, -1):  # type: int
+            print_at(11, col, NO_BOAT)
+            print_at(11, col - 1, BOAT)
+            sleep(.02)
+    return to_pos
 
 
-def move_right(item, boat_pos, left_items, right_items):
-    """Move item to right dock."""
-    pos = lcl.ITEMS.index(item)
-    left_items[pos] = ' '
-    ansi.print_at(10, 1, clrm.Style.BRIGHT + ''.join(left_items) +
-                  clrm.Style.DIM)
+def move_right(item: str, boat_pos: bool, left_items: List[str],
+               right_items: List[str]) -> Tuple[Optional[str], bool]:
+    """Move item to right dock.
 
+    :param item: item to move.
+    :param boat_pos: current boat position (LEFT=False, RIGHT=True).
+    :param left_items: items in left dock.
+    :param right_items: items in right dock.
+    :returns: (None, curr. boat pos) or (loc. game over msg, curr. boat pos).
+    """
+    assert all([isinstance(item, str), isinstance(boat_pos, bool),
+                isinstance(left_items, list), isinstance(right_items, list)])
     if boat_pos == RIGHT:
-        cur_boat_pos = move_boat(LEFT)
+        cur_boat_pos = move_boat(LEFT)  # type: bool
         if upd_status(cur_boat_pos, left_items, right_items) == lcl.GAME_OVER:
             return lcl.GAME_OVER, cur_boat_pos
+
+    pos = lcl.ITEMS.index(item)  # type: int
+    left_items[pos] = ' '
+    print_at(10, 1, bright(left_items))
+
     cur_boat_pos = move_boat(RIGHT)
 
     right_items[pos] = item
-    ansi.print_at(10, 55, clrm.Style.BRIGHT + ''.join(right_items) +
-                  clrm.Style.DIM)
+    print_at(10, 55, bright(right_items))
 
     if upd_status(cur_boat_pos, left_items, right_items) == lcl.GAME_OVER:
         return lcl.GAME_OVER, cur_boat_pos
@@ -143,22 +181,31 @@ def move_right(item, boat_pos, left_items, right_items):
     return None, cur_boat_pos
 
 
-def move_left(item, boat_pos, left_items, right_items):
-    """Move item to left dock."""
-    pos = lcl.ITEMS.index(item)
-    right_items[pos] = ' '
-    ansi.print_at(10, 55, clrm.Style.BRIGHT + ''.join(right_items) +
-                  clrm.Style.DIM)
+def move_left(item: str, boat_pos: bool, left_items: List[str],
+              right_items: List[str]) -> Tuple[Optional[str], bool]:
+    """Move item to left dock.
 
+    :param item: item to move.
+    :param boat_pos: current boat position (LEFT=False, RIGHT=True).
+    :param left_items: items in left dock.
+    :param right_items: items in right dock.
+    :returns: (None, curr. boat pos) or (loc. game over msg, curr. boat pos).
+    """
+    assert all([isinstance(item, str), isinstance(boat_pos, bool),
+                isinstance(left_items, list), isinstance(right_items, list)])
     if boat_pos == LEFT:
-        cur_boat_pos = move_boat(RIGHT)
+        cur_boat_pos = move_boat(RIGHT)  # type: bool
         if upd_status(cur_boat_pos, left_items, right_items) == lcl.GAME_OVER:
             return lcl.GAME_OVER, cur_boat_pos
+
+    pos = lcl.ITEMS.index(item)  # type: int
+    right_items[pos] = ' '
+    print_at(10, 55, bright(right_items))
+
     cur_boat_pos = move_boat(LEFT)
 
     left_items[pos] = item
-    ansi.print_at(10, 1, clrm.Style.BRIGHT + ''.join(left_items) +
-                  clrm.Style.DIM)
+    print_at(10, 1, bright(left_items))
 
     if upd_status(cur_boat_pos, left_items, right_items) == lcl.GAME_OVER:
         return lcl.GAME_OVER, cur_boat_pos
@@ -166,32 +213,42 @@ def move_left(item, boat_pos, left_items, right_items):
     return None, cur_boat_pos
 
 
-def main():
-    """Clear screen, draw scenario, request input and select correct action."""
-    left_items = lcl.ITEMS[:]  # left dock items
-    right_items = [' ', ' ', ' ']  # right dock items
-    cur_boat_pos = LEFT  # current boat position
+def draw_scenery(left_items: List[str]):
+    """Draw scenery.
 
-    clrm.init()
-    ansi.clear_screen()
-
+    :param left_items: items in left dock.
+    """
     print(lcl.TITLE)
-    ansi.print_at(10, 1, clrm.Style.BRIGHT + ''.join(left_items) +
-                  clrm.Style.DIM)
-    ansi.print_at(11, 1, DOCK)
-    ansi.print_at(11, 4, BOAT)
-    ansi.print_at(11, 55, DOCK)
-    ansi.print_at(12, 4, SEA)
+    print_at(10, 1, bright(left_items))
+    print_at(11, 1, DOCK)
+    print_at(11, 4, BOAT)
+    print_at(11, 55, DOCK)
+    print_at(12, 4, SEA)
+
+
+def main() -> None:
+    """Clear screen, draw scenario, request input and select correct action."""
+    # left dock items
+    left_items = list(lcl.ITEMS)  # type: List[str]
+    # right dock items
+    right_items = [' ', ' ', ' ']  # type: List[str]
+    # current boat position
+    cur_boat_pos = LEFT  # type: bool
+
+    init()
+    clear_screen()
+
+    draw_scenery(left_items)
 
     while True:
-        choice = ''
+        choice = ''  # type: str
         while choice not in ALLOWED_KEYS:
-            ansi.print_at(14, 1, lcl.PROMPT)
+            print_at(14, 1, lcl.PROMPT)
             choice = input('> ').upper()
-            # ToDo: check for unicode and clear
-            ansi.clear_line(14)  # must clear line before actual input (!?)
+            clear_line(14)
 
         if choice in lcl.ITEMS:
+            result = None  # type: Optional[str]
             if choice in left_items:
                 result, cur_boat_pos = move_right(choice, cur_boat_pos,
                                                   left_items, right_items)
@@ -200,18 +257,16 @@ def main():
                                                  left_items, right_items)
 
             if result == lcl.GAME_OVER:
-                ansi.print_at(6, 1, lcl.GAME_OVER)
+                print_at(6, 1, lcl.GAME_OVER)
                 break
         else:  # Quit
             break
 
-    ansi.set_print_pos(16, 1)
+    set_print_pos(16, 1)
 
 
 if __name__ == '__main__':
-    # import doctest
-    # doctest.testmod(verbose=True)
-    sys.exit(main())
+    main()
 
 
 # ToDo: add sound

@@ -1,26 +1,38 @@
 Reference
 ---------
 
-ansi
-::::
+ansi_helper
+:::::::::::
 
-.. automodule:: ansi
+.. automodule:: ansi_helper
     :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
 
 boatman
 :::::::
 
-.. automodule:: boatman
+.. automodule:: __main__
     :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
 
 localization
 ::::::::::::
 
 .. automodule:: localization
     :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
 
 utils
 :::::
 
 .. automodule:: utils
     :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:

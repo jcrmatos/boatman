@@ -1,6 +1,6 @@
 @echo off
 
-rem Copyright 2009-2015 Joao Carlos Roseta Matos
+rem Copyright 2009-2016 Joao Carlos Roseta Matos
 rem
 rem This program is free software: you can redistribute it and/or modify
 rem it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ set OLDPATH=%PATH%
 set OLDPYTHONPATH=%PYTHONPATH%
 
 set REBUILD_REFERENCE=YES
-set CHECK_PY3_COMPATIBILITY=YES
+set CHECK_PY3_COMPATIBILITY=
 
 if "%1"=="-h" goto :HELP
 if "%1"=="help" goto :HELP
@@ -28,22 +28,24 @@ goto :NOHELP
 :HELP
 echo Usage:
 echo.
-echo build -h, help   show this help message
-echo build            builds sdist/bdist_wheel or just sdist if APP_TYPE = 'module' inside appinfo.py
-echo build clean      clears dirs and files
-echo build cxf        builds windows exe including Python runtime - not working for the moment
-echo build doc        builds doc
-echo build dumb       builds bdist_dumb (zip on Windows, tar/ztar/gztar/zip on GNU Linux in the future)
-echo build egg        builds bdist_egg (egg)
-echo build exe        builds bdist_wininst (exe) - requires Python to be installed on destination
-echo build msi        builds bdist_msi (msi) - requires Python to be installed on destination
-echo build py2exe     builds windows exe including Python runtime
-echo build pypi       uploads dists to PyPI (including documentation)
-echo build pypitest   uploads dists to test
-echo build rpm        builds bdist_rpm (rpm/srpm) - only works on GNU Linux (in the future)
-echo build src        builds sdist (zip on Windows, tar.gz on GNU Linux in the future)
-echo build test       run tests
-echo build whl        builds bdist_wheel (whl)
+echo build -h, help      show this help message
+echo build               builds sdist/bdist_wheel
+echo build check         checks PEP8/Py3 compliance
+echo build check-report  checks PEP8/Py3 compliance with reporting
+echo build clean         clears dirs and files
+echo build doc           builds doc
+rem echo build dumb          builds bdist_dumb (zip on Windows, tar/ztar/gztar/zip on GNU Linux in the future)
+rem echo build egg           builds bdist_egg (egg)
+rem echo build exe           builds bdist_wininst (exe) - requires Python to be installed on destination
+rem echo build msi           builds bdist_msi (msi) - requires Python to be installed on destination
+rem echo build py2exe        builds windows exe including Python runtime
+echo build pyinst        builds windows exe including Python runtime
+echo build pypi          uploads dists to PyPI (including documentation)
+echo build pypitest      uploads dists to test
+rem echo build rpm           builds bdist_rpm (rpm/srpm) - only works on GNU Linux
+echo build src           builds sdist (zip on Windows, tar.gz on GNU Linux)
+echo build tests         run tests
+echo build whl           builds bdist_wheel (whl)
 echo.
 echo Before runnning build.cmd for the first time, you should execute pip install -r requirements-dev.txt to install it's requirements.
 echo.
@@ -64,11 +66,10 @@ echo *** Clean
 echo.
 if exist app_ver.txt del app_ver.txt
 if exist app_name.txt del app_name.txt
-if exist app_type.txt del app_type.txt
 if exist py_ver.txt del py_ver.txt
 if exist build rd /s /q build
 if exist dist rd /s /q dist
-if exist test\*.pyc del test\*.pyc
+if exist tests\*.pyc del tests\*.pyc
 
 python setup_utils.py app_ver()
 if not exist app_ver.txt goto :EXIT
@@ -99,17 +100,10 @@ python setup_utils.py update_copyright()
 python setup_utils.py upd_usage_in_readme()
 python setup_utils.py collect_to_do()
 
-copy /y README.rst %PROJECT%\README.txt > nul
-copy /y LICENSE.rst %PROJECT%\LICENSE.txt > nul
-copy /y AUTHORS.rst %PROJECT%\AUTHORS.txt > nul
-copy /y ChangeLog.rst %PROJECT%\ChangeLog.txt > nul
-
-copy /y appinfo.py %PROJECT% > nul
-
-python setup_utils.py app_type()
-if not exist app_type.txt goto :EXIT
-for /f "delims=" %%f in (app_type.txt) do set PROJ_TYPE=%%f
-del app_type.txt
+copy /y README.rst %PROJECT% > nul
+copy /y LICENSE.rst %PROJECT% > nul
+copy /y AUTHORS.rst %PROJECT% > nul
+copy /y CHANGES.rst %PROJECT% > nul
 
 python setup_utils.py py_ver()
 if not exist py_ver.txt goto :EXIT
@@ -118,12 +112,52 @@ del py_ver.txt
 
 :CHECKERS
 echo.
-echo *** PEP8 checker
+echo *** Flake8 checker
 echo.
+flake8 --ignore E402,W503 %PROJECT%
+rem E402 - module level imports position (after dunder var)
+rem F821 - undefined name 'unicode' (in Py3)
+rem W503 - line break before binary operator
+echo.
+echo *****
+echo If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo.
+pause
 
-for %%a in (%PROJECT%\*.py) do flake8 %%a
-rem set PYTHONPATH=%PYTHONPATH%:%PROJECT%
-rem for %%a in (%PROJECT%\*.py) do pylint -r n %%a
+echo.
+echo *** PyLint checker
+echo.
+set PYTHONPATH=%PYTHONPATH%;%PROJECT%
+set PYLINTREPORT=-r n
+if "%1"=="check-report" set PYLINTREPORT=-r y
+pylint -d wrong-import-position %PYLINTREPORT% %PROJECT%
+set PYLINTREPORT=
+set PYTHONPATH=%OLDPYTHONPATH%
+rem C0/wrong-import-position - import should be placed at the top of the module (import after dunder var)
+rem E25/32/37/undefined-variable - undefined variable 'unicode' (in Py3)
+echo.
+echo *****
+echo If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo.
+pause
+
+echo.
+echo *** Bandit checker
+echo.
+bandit -r -s B101 -f csv %PROJECT%
+rem B101 - Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+echo.
+echo *****
+echo If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
+echo.
+pause
+
+echo.
+echo *** MyPy checker
+echo.
+cd %PROJECT%
+for %%f in (*.py) do cmd /c mypy -s --suppress-error-context --strict-optional --warn-redundant-casts --disallow-untyped-defs --disallow-untyped-calls %%f
+cd ..
 echo.
 echo *****
 echo If there were errors or warnings press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
@@ -133,9 +167,9 @@ pause
 if "%CHECK_PY3_COMPATIBILITY%"=="" goto :NO_CHECK_PY3_COMPAT
 
 echo.
-echo *** Python 3 compatibility checker
+echo *** PyLint Py3 compatibility checker
 echo.
-for %%a in (%PROJECT%\*.py) do pylint -r n --py3k %%a
+pylint --py3k -r n %PROJECT%
 echo.
 echo *****
 echo If there were errors or warnings (No config file found... is OK) press Ctrl-C to interrupt this batch file, fix them and rerun build.cmd.
@@ -145,31 +179,29 @@ pause
 
 :NO_CHECK_PY3_COMPAT
 cls
+if "%1"=="check" goto :EXIT
+if "%1"=="check-report" goto :EXIT
 if "%1"=="doc" goto :DOC
 
-:TEST
-if not exist test goto :DOC
+:TESTS
+if not exist tests goto :DOC
 echo.
-echo *** Test
+echo *** Tests
 echo.
 
 rem *** source doctest ***
 rem python -m doctest %PROJECT%\%PROJECT%.py
 
 rem *** doctest ***
-rem python -m doctest -v test\test.rst
+rem python -m doctest -v tests\doctest_*.rst
 
 rem *** unittest ***
-rem ren test\test_%PROJECT%.py pytest_test_%PROJECT%.py
-rem ren test\doctest_test_%PROJECT%.py test_%PROJECT%.py
-rem python -m unittest discover -v -s test
-rem ren test\test_%PROJECT%.py doctest_test_%PROJECT%.py
-rem ren test\pytest_test_%PROJECT%.py test_%PROJECT%.py
+rem python -m unittest discover -b -v -s tests -p unittest_*.py
 
-py.test --cov-report term-missing --cov %PROJECT% -v test
+py.test --cov-report term-missing --cov %PROJECT% -v tests
 if ERRORLEVEL==1 goto :EXIT
 
-if "%1"=="test" goto :EXIT
+if "%1"=="tests" goto :EXIT
 pause
 cls
 
@@ -227,17 +259,17 @@ pause
 cls
 
 :NO_DOC
-if "%1"=="cxf" goto :CXF
 if "%1"=="dumb" goto :DUMB
 if "%1"=="egg" goto :EGG
 if "%1"=="exe" goto :EXE
 if "%1"=="msi" goto :MSI
-if "%1"=="py2exe" goto :PY2EXE
+rem if "%1"=="py2exe" goto :PY2EXE
+if "%1"=="pyinst" goto :PYINSTALLER
 if "%1"=="rpm" goto :RPM
 if "%1"=="whl" goto :WHL
 
 :SRC
-python setup_utils.py sleep(5)
+python setup_utils.py sleep(5.0)
 echo.
 echo *** sdist build
 echo.
@@ -245,7 +277,6 @@ python setup.py sdist
 echo.
 echo *** End of sdist build. Check for errors.
 echo.
-if "%PROJ_TYPE%"=="module" goto :MSG
 if "%1"=="src" goto :MSG
 pause
 
@@ -316,39 +347,39 @@ echo If there were filesystem errors (eg. directory not empty), random syntax or
 echo.
 goto :EXIT
 
-:CXF
-echo.
-echo *** CXF
-echo.
-echo Not working yet...
-rem python setup_cxf.py build
-rem python setup_cxf.py build bdist_msi
-rem python setup_cxf.py build_exe
-rem cxfreeze setup_cxf.py build_exe
-rem echo.
-rem echo *** Copy datafiles
-rem echo.
-rem copy build\exe.win32-%PY_VER%\%PROJECT%\*.* build\exe.win32-%PY_VER%
-goto :EXIT
-
 :PY2EXE
 echo.
 echo *** PY2EXE
 echo.
-echo *** py2exe requires commenting unicode import in appinfo.py
-echo.
-python setup_utils.py comment_import_for_py2exe('appinfo.py')
-copy /y appinfo.py %PROJECT% > nul
-pause
+rem echo *** py2exe requires commenting unicode import in appinfo.py
+rem echo.
+rem python setup_utils.py comment_import_for_py2exe('appinfo.py')
+rem copy /y appinfo.py %PROJECT% > nul
+rem pause
 python setup_py2exe.py py2exe
 if exist dist\__main__.exe ren dist\__main__.exe %PROJECT%.exe
-echo.
-echo *** Uncommenting unicode import in appinfo.py
-echo.
-python setup_utils.py uncomment_import_for_py2exe('appinfo.py')
-copy /y appinfo.py %PROJECT% > nul
+rem echo.
+rem echo *** Uncommenting unicode import in appinfo.py
+rem echo.
+rem python setup_utils.py uncomment_import_for_py2exe('appinfo.py')
+rem copy /y appinfo.py %PROJECT% > nul
 echo *****
 echo Check if you need to add any files or directories to DATA_FILES_PY2EXE in setup_py2exe.py.
+echo.
+goto :EXIT
+
+:PYINSTALLER
+echo.
+echo *** PYINSTALLER
+echo.
+if exist %PROJECT%.spec goto :SPEC_EXISTS
+pyinstaller -y --clean -p %PROJECT% %PROJECT%\%PROJECT%.py
+goto :END_PYINST
+:SPEC_EXISTS
+pyinstaller -y --clean %PROJECT%.spec
+:END_PYINST
+echo *****
+echo Check if you need to add any files or directories to datas in %PROJECT%.spec.
 echo.
 goto :EXIT
 
@@ -357,12 +388,11 @@ echo.
 echo *** PyPI: Register and upload
 echo.
 python setup.py register -r pypi
+rem for %%f in (dist\*.*) do cmd /c twine register -r pypi %%f
 twine upload dist/*
 if ERRORLEVEL==1 goto :EXIT
 rem *** old way ***
-rem if "%PROJ_TYPE%"=="module" python setup.py sdist upload -r pypi
-rem if "%PROJ_TYPE%"=="module" goto :EXIT
-rem rem python setup.py sdist bdist_egg bdist_wininst bdist_wheel upload -r pypi
+rem python setup.py sdist bdist_egg bdist_wininst bdist_wheel upload -r pypi
 rem python setup.py sdist bdist_wheel upload -r pypi
 
 if exist %PROJECT%\doc python setup.py register upload_docs --upload-dir=%PROJECT%\doc
@@ -373,11 +403,10 @@ echo.
 echo *** PYPITEST: Register and upload
 echo.
 python setup.py register -r test
+rem for %%f in (dist\*.*) do cmd /c twine register -r test %%f
 twine upload -r test dist/*
 rem *** old way ***
-rem if "%PROJ_TYPE%"=="module" python setup.py sdist upload -r test
-rem if "%PROJ_TYPE%"=="module" goto :EXIT
-rem rem python setup.py sdist bdist_egg bdist_wininst bdist_wheel upload -r test
+rem python setup.py sdist bdist_egg bdist_wininst bdist_wheel upload -r test
 rem python setup.py sdist bdist_wheel upload -r test
 
 :EXIT
@@ -387,7 +416,6 @@ set OLDPATH=
 set OLDPYTHONPATH=
 set PY_VER=
 set APP_VER=
-set PROJ_TYPE=
 set PROJECT=
 set SPHINXOPTS=
 set REBUILD_REFERENCE=

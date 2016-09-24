@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009-2015 Joao Carlos Roseta Matos
+# Copyright 2009-2016 Joao Carlos Roseta Matos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,42 +18,37 @@
 
 """Application basic information."""
 
-# Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from typing import List
 
-import datetime as dt
-# import io  # Python 3 compatibility
-
-# from builtins import input  # Python 3 compatibility
+import boatman
 
 
-APP_NAME = 'boatman'
-APP_VERSION = '0.0.6'
-APP_LICENSE = 'GNU General Public License v2 or later (GPLv2+)'
-APP_AUTHOR = 'Joao Carlos Roseta Matos'
-APP_EMAIL = 'jcrmatos@gmail.com'
-APP_URL = 'https://github.com/jcrmatos/boatman'
-APP_KEYWORDS = 'boat man'
+APP_NAME = boatman.__name__  # type: str
+APP_VERSION = boatman.__version__  # type: str
+APP_LICENSE = boatman.__license__  # type: str
+APP_AUTHOR = boatman.__author__  # type: str
+APP_EMAIL = 'jcrmatos@gmail.com'  # type: str
+APP_URL = 'https://github.com/jcrmatos/boatman'  # type: str
+APP_KEYWORDS = 'boat man'  # type: str
 
 # change classifiers to be correct for your application/module
-CLASSIFIERS = ['Development Status :: 4 - Beta',
+# See https://pypi.python.org/pypi?%3Aaction=list_classifiers
+CLASSIFIERS = ('Development Status :: 5 - Production/Stable',
                'Environment :: Console',
                'Intended Audience :: End Users/Desktop',
-               'License :: OSI Approved ::' + ' ' + APP_LICENSE,
+               'License :: OSI Approved :: ' + APP_LICENSE,
                'Natural Language :: English',
                'Natural Language :: Portuguese',
                'Operating System :: OS Independent',
                'Programming Language :: Python',
-               'Programming Language :: Python :: 2',
-               'Programming Language :: Python :: 2.7',
                'Programming Language :: Python :: 3',
-               'Programming Language :: Python :: 3.4',
-               'Topic :: Games/Entertainment']
+               'Programming Language :: Python :: 3.5',
+               'Programming Language :: Python :: 3 :: Only',
+               'Topic :: Games/Entertainment'
+)  # type: Tuple[str]
 
-COPYRIGHT = 'Copyright 2009-' + str(dt.date.today().year) + ' ' + APP_AUTHOR
+COPYRIGHT = boatman.COPYRIGHT  # type: str
 
-APP_TYPE = 'application'  # it can be application or module
-
-README_FILE = 'README.rst'
-REQUIREMENTS_FILE = 'requirements.txt'
+README_FILE = 'README.rst'  # type: str
+REQUIREMENTS_FILE = 'requirements.txt'  # type: str
+REQUIREMENTS_DEV_FILE = 'requirements-dev.txt'  # type: str

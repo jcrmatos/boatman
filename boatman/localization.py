@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009-2015 Joao Carlos Roseta Matos
+# Copyright 2009-2016 Joao Carlos Roseta Matos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,70 +18,61 @@
 
 """Localization."""
 
-# Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 
-# import io  # Python 3 compatibility
 import locale
-import sys
+# import sys
+from typing import Tuple
 
-# from builtins import input  # Python 3 compatibility
-import colorama as clrm
+from colorama import Style
 
 
-def sys_lang():
-    """Get system language."""
-    lang = locale.getdefaultlocale()
-    # lang = 'EN'  # only for testing
-    if 'pt_' in lang[0]:  # Portuguese
-        return 'PT'
-    else:  # English
-        return 'EN'
+# pt, en, etc.
+if locale.getdefaultlocale()[0]:
+    LANG = locale.getdefaultlocale()[0][:2]  # type: str
+else:
+    LANG = 'en'
 
-LANG = sys_lang()
+# FS_ENC = sys.getfilesystemencoding()  # type: str
+# INPUT_ENC = sys.stdin.encoding  # type: str
+UTF = 'utf-8'  # type: str
 
-FS_ENC = sys.getfilesystemencoding()
-INPUT_ENC = sys.stdin.encoding
-UTF_ENC = 'utf-8'
 
-if LANG == 'PT':  # Portuguese
-    GAME_OVER = 'Fim do jogo.'
-    GOAT = 'C'
-    GOAT_ATE_PASTURE = 'A cabra comeu o pasto. Perdeu :('
-    ITEMS = ['L', 'C', 'P']
-    PASTURE = 'P'
-    PROMPT = (clrm.Style.BRIGHT + 'L' + clrm.Style.DIM + '(obo), ' +
-              clrm.Style.BRIGHT + 'C' + clrm.Style.DIM + '(abra), ' +
-              clrm.Style.BRIGHT + 'P' + clrm.Style.DIM + '(asto), ' +
-              clrm.Style.BRIGHT + 'S' + clrm.Style.DIM + '(air)')
-    QUIT = 'S'
-    TITLE = ('----------------------- ' +
-             clrm.Style.BRIGHT + 'Barqueiro' + clrm.Style.DIM +
-             ' -----------------------')
-    WIN = clrm.Style.BRIGHT + 'Parabéns, ganhou!' + clrm.Style.RESET_ALL
-    WOLF = 'L'
-    WOLF_ATE_GOAT = 'O lobo comeu a cabra. Perdeu :('
+def bright(text: str) -> str:
+    """Brighten text.
+
+    :param text: text to brighten.
+    :returns: brightened text.
+    """
+    return Style.BRIGHT + text + Style.DIM
+
+
+if LANG == 'pt':  # Portuguese
+    GAME_OVER = 'Fim do jogo.'  # type: str
+    GOAT = 'C'  # type: str
+    GOAT_ATE_PASTURE = 'A cabra comeu o pasto. Perdeu :('  # type: str
+    ITEMS = ('L', 'C', 'P')  # type: Tuple[str, str, str]
+    PASTURE = 'P'  # type: str
+    PROMPT = (bright('L') + '(obo), ' + bright('C') + '(abra), ' + bright('P')
+              + '(asto), ' + bright('S') + '(air)')  # type: str
+    QUIT = 'S'  # type: str
+    TITLE = ('----------------------- ' + bright('Barqueiro')
+             + ' -----------------------')  # type: str
+    WIN = Style.BRIGHT + 'Parabéns, ganhou!' + Style.RESET_ALL  # type: str
+    WOLF = 'L'  # type: str
+    WOLF_ATE_GOAT = 'O lobo comeu a cabra. Perdeu :('  # type: str
 else:  # English
     GAME_OVER = 'Game over.'
     GOAT = 'G'
     GOAT_ATE_PASTURE = 'The goat ate the pasture. You lose :('
-    ITEMS = ['W', 'G', 'P']
+    ITEMS = ('W', 'G', 'P')
     PASTURE = 'P'
-    PROMPT = (clrm.Style.BRIGHT + 'W' + clrm.Style.DIM + '(olf), ' +
-              clrm.Style.BRIGHT + 'G' + clrm.Style.DIM + '(oat), ' +
-              clrm.Style.BRIGHT + 'P' + clrm.Style.DIM + '(asture), ' +
-              clrm.Style.BRIGHT + 'Q' + clrm.Style.DIM + '(uit)')
+    PROMPT = (bright('W') + '(olf), ' + bright('G') + '(oat), '
+              + bright('P') + '(asture), ' + bright('Q')
+              + '(uit)')
     QUIT = 'Q'
-    TITLE = ('----------------------- ' +
-             clrm.Style.BRIGHT + 'Boatman' + clrm.Style.DIM +
-             ' -----------------------')
-    WIN = 'Congratulations, you won!'
+    TITLE = ('----------------------- ' + bright('Boatman')
+             + ' -----------------------')
+    WIN = (Style.BRIGHT + 'Congratulations, you won!'
+           + Style.RESET_ALL)
     WOLF = 'W'
     WOLF_ATE_GOAT = 'The wolf ate the goat. You lose :('
-
-
-if __name__ == '__main__':
-    # import doctest
-    # doctest.testmod(verbose=True)
-    pass

@@ -1,7 +1,5 @@
-include *.cmd *.ini *.py *.rst *.txt *.yml
+include *.cmd *.ini *.py *.rst *.txt *.yml *.spec
 include appveyor/*
 include doc/*.rst doc/*.py
 include pythonhosted.org/*
-include test/*.rst
-include boatman/*.txt
-recursive-include boatman/doc *
+include tests/*

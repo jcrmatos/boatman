@@ -7,7 +7,7 @@
 *.pkl
 *.~*
 
-# Packages
+# packaging
 *.egg
 *.egg-info
 dist/
@@ -18,17 +18,24 @@ var/
 sdist/
 develop-eggs/
 .installed.cfg
+
+# caches
 __pycache__/
-test/__pycache__
+tests/__pycache__
 
 # virtualenv
 venv/
+.venv/
+venv3/
+.venv3/
 
-# Unit test / coverage reports
+# misc
+.bandit
 .coverage
 .tox
 
 # project specific
 boatman/__pycache__/
 boatman/doc/
-boatman/pythonhosted.org/*.zip
+boatman/_eric6project/
+boatman/boatman.e4p

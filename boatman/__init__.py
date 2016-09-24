@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009-2015 Joao Carlos Roseta Matos
+# Copyright 2009-2016 Joao Carlos Roseta Matos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,15 +18,21 @@
 
 """Package initialization file."""
 
-# Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 
-# import io  # Python 3 compatibility
+__author__ = 'Joao Carlos Roseta Matos'  # type: str
+__license__ = 'GNU General Public License v3 or later (GPLv3+)'  # type: str
+__version__ = '0.0.7'  # type: str
+
+
+import datetime as dt
 import os
 import sys
 
-# from builtins import input  # Python 3 compatibility
+
+NAME = 'boatman'  # type: str
+COPYRIGHT = ('Copyright 2009-' + str(dt.date.today().year) + ' '
+             + __author__)  # type: str
+
 
 # add to PYTHONPATH, used by Sphinx doc system
 sys.path.insert(1, os.path.dirname(__file__))

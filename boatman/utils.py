@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009-2015 Joao Carlos Roseta Matos
+# Copyright 2009-2016 Joao Carlos Roseta Matos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,26 +18,19 @@
 
 """Utilities."""
 
-# Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 
-# import io  # Python 3 compatibility
 import os
 import sys
 
-# from builtins import input  # Python 3 compatibility
 
+def run(win_cmd: str = '', x_cmd: str = '') -> None:
+    """Run OS command, which one depends on the running platform.
 
-def run(win_cmd='', x_cmd=''):
-    """Run OS command."""
+    :param win_cmd: windows command to run.
+    :param x_cmd: linux command to run.
+    """
+    assert isinstance(win_cmd, str) and isinstance(x_cmd, str)
     if sys.platform == 'win32':
         os.system(win_cmd)
     else:
         os.system(x_cmd)
-
-
-if __name__ == '__main__':
-    # import doctest
-    # doctest.testmod(verbose=True)
-    pass

@@ -3,7 +3,7 @@
 
    readme
    reference
-   changelog
+   changes
    license
    authors
    

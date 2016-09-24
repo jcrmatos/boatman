@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'boatman'
-copyright = u'2009-2015, Joao Carlos Roseta Matos'
+copyright = u'2009-2016, Joao Carlos Roseta Matos'
 author = u'Joao Carlos Roseta Matos'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -61,7 +61,7 @@ author = u'Joao Carlos Roseta Matos'
 # built documents.
 #
 # The short X.Y version.
-version = open('../ChangeLog.rst').readline().split()[0]
+version = open('../CHANGES.rst').readline().split()[0]
 # The full version, including alpha/beta/rc tags.
 release = version
 

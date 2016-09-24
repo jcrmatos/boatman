@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2009-2015 Joao Carlos Roseta Matos
+# Copyright 2009-2016 Joao Carlos Roseta Matos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,70 +18,130 @@
 
 """Setup for source, egg, wheel, wininst, msi and dumb distributions."""
 
-# Python 3 compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-import io  # Python 3 compatibility
+import io
 import os
+from typing import Dict, List
 
-# from builtins import input  # Python 3 compatibility
 from setuptools import setup, find_packages
 
-import appinfo
+from appinfo import (APP_AUTHOR, APP_EMAIL, APP_KEYWORDS, APP_LICENSE,
+                     APP_NAME, APP_URL, APP_VERSION, CLASSIFIERS, README_FILE,
+                     REQUIREMENTS_FILE, REQUIREMENTS_DEV_FILE)
 
 
-UTF_ENC = 'utf-8'
+UTF = 'utf-8'  # type: str
 
-DESC = LONG_DESC = ''
-if os.path.isfile(appinfo.README_FILE):
-    with io.open(appinfo.README_FILE, encoding=UTF_ENC) as f_in:
-        LONG_DESC = f_in.read()
-        DESC = LONG_DESC.split('\n')[3]
 
-# PACKAGES = [appinfo.APP_NAME]  # use only if find_packages() doesn't work
+def get_deps_names(filename: str) -> List[str]:
+    """Extract dependencies names from requirements file.
+    
+    :param filename: requirements filename.
+    :return: list of dependencies names.
+    """
+    deps = ['']  # type: List[str]
+    if os.path.isfile(filename):
+        with io.open(filename, encoding=UTF) as f_in:  # type: _ioTextIOWrapper
+            deps = f_in.read().splitlines()
+            for idx, line in enumerate(deps):  # type: int, str
+                if '<' in line:
+                    deps[idx] = line.split('<')[0].strip()
+                elif '>' in line:
+                    deps[idx] = line.split('>')[0].strip()
+                elif '=' in line:
+                    deps[idx] = line.split('=')[0].strip()
+            deps = [line for line in deps if line and line[0] != '#']
+    return deps
 
-REQUIREMENTS = ''
-if os.path.isfile(appinfo.REQUIREMENTS_FILE):
-    with io.open(appinfo.REQUIREMENTS_FILE, encoding=UTF_ENC) as f_in:
-        REQUIREMENTS = f_in.read().splitlines()
 
-ENTRY_POINTS = {'console_scripts': [appinfo.APP_NAME + '=' +
-                                    appinfo.APP_NAME + '.' +
-                                    appinfo.APP_NAME + ':main'],
-                # 'gui_scripts' : ['app_gui=' + appinfo.APP_NAME + '.' +
-                #                  appinfo.APP_NAME + ':start']
-                }
+description = ''  # type: str
+long_description = ''  # type: str
+if os.path.isfile(README_FILE):
+    with io.open(README_FILE, encoding=UTF) as f_in:  # type: _ioTextIOWrapper
+        long_description = f_in.read()
+        description = long_description.splitlines()[3]
 
-setup(name=appinfo.APP_NAME,
-      version=appinfo.APP_VERSION,
-      description=DESC,
-      long_description=LONG_DESC,
-      license=appinfo.APP_LICENSE,
-      url=appinfo.APP_URL,
-      author=appinfo.APP_AUTHOR,
-      author_email=appinfo.APP_EMAIL,
+# use only if find_packages() doesn't work
+# packages = [APP_NAME]  # type: List[str]
 
-      classifiers=appinfo.CLASSIFIERS,
-      keywords=appinfo.APP_KEYWORDS,
+deps = get_deps_names(REQUIREMENTS_FILE)  # type: List[str]
+deps_dev = get_deps_names(REQUIREMENTS_DEV_FILE)  # type: List[str]
 
-      packages=find_packages(),
-      # packages=setuptools.find_packages(exclude=['docs',
-      #                                            'tests*']),
+# for windows creates a APP_NAME.exe, APP_NAME.py, APP_NAME_gui.exe and
+# APP_NAME_gui.pyw under PYTHON_DIR/Scripts
+# for other systems creates a APP_NAME.py and APP_NAME_gui.py under
+# PYTHON_DIR/Scripts
+# script_name = package.module:function
+entry_points = {'console_scripts': [APP_NAME + '='
+                                    + APP_NAME + '.'  # auto imported
+                                    + APP_NAME + ':main'],
+                # 'gui_scripts' : [APP_NAME + '_gui' + '='
+                #                  + APP_NAME + '.'  # auto imported
+                #                  + APP_NAME + ':main']
+}  # type: Dict[str, List[str]]
+
+package_data = {APP_NAME: ['*.rst'],}  # type: Dict[str, List[str]]
+
+setup(name=APP_NAME,
+      version=APP_VERSION,
+      description=description,
+      long_description=long_description,
+      license=APP_LICENSE,
+      url=APP_URL,
+      author=APP_AUTHOR,
+      author_email=APP_EMAIL,
+
+      classifiers=CLASSIFIERS,
+      keywords=APP_KEYWORDS,
+
+      packages=find_packages(exclude=['contrib', 'doc', 'tests']),
 
       # use only if find_packages() doesn't work
-      # packages=PACKAGES,
-      # package_dir={'': appinfo.APP_NAME},
+      # packages=packages,
+      # package_dir={'': APP_NAME},
 
-      # to create an executable
-      entry_points=ENTRY_POINTS,
+      # Alternatively, if you want to distribute just a my_module.py, uncomment
+      # this:
+      # py_modules=['my_module'],
 
-      install_requires=REQUIREMENTS,
+      # scripts=,  # don't use
+
+      # To provide executable scripts, use entry points in preference to the
+      # "scripts" keyword. Entry points provide cross-platform support and
+      # allow pip to create the appropriate form of executable for the target
+      # platform.
+      entry_points=entry_points,
+
+      # List run-time dependencies here.  These will be installed by pip when
+      # your project is installed. For an analysis of "install_requires" vs
+      # pip's requirements files see:
+      # https://packaging.python.org/en/latest/requirements.html
+      install_requires=deps,
+
+      # List additional groups of dependencies here (e.g. development
+      # dependencies). You can install these using the following syntax,
+      # for example:
+      # $ pip install -e .[dev]
+      extras_require={'dev': deps_dev},
 
       # used only if the package is not in PyPI, but exists as an
       # egg, sdist format or as a single .py file
       # see http://goo.gl/OgnjhO
       # dependency_links = ['http://host.domain.local/dir/'],
 
-      include_package_data=True,  # use MANIFEST.in during install
-      )
+      # include_package_data=True,  # use MANIFEST.in during install
+
+      # If there are data files included in your packages that need to be
+      # installed, specify them here.  If using Python 2.6 or less, then these
+      # have to be included in MANIFEST.in as well.
+      # Relative to package path.
+      package_data=package_data,
+
+      # Although 'package_data' is the preferred approach, in some case you may
+      # need to place data files outside of your packages. See:
+      # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
+      # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
+      # Relative to package build path.
+      # data_files=[('my_data', ['data/data_file'])],
+      
+      zip_safe=False
+)

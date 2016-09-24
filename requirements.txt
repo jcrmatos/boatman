@@ -1,2 +1,1 @@
-colorama
-future
+colorama==0.3.7
