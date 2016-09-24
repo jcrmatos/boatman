@@ -39,3 +39,4 @@ boatman/__pycache__/
 boatman/doc/
 boatman/_eric6project/
 boatman/boatman.e4p
+boatman/*.rst

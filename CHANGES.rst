@@ -1,3 +1,16 @@
+0.0.10 2016-09-24 ::
+
+    Correct CHANGES.rst.
+    Add entry to .gitignore.
+
+
+0.0.9 2016-09-24 ::
+
+    Correct ToDo listing in doc (setup_utils.py).
+    Correct duplicate and indentation in boatman.py.
+    Correct sys.path change in test file and __init__.py.
+
+
 0.0.8 2016-09-24 ::
 
     Remove old files.
