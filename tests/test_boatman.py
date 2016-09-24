@@ -18,12 +18,17 @@
 
 """Pytest for boatman."""
 
+
 import os
 import sys
 
 import pytest
 
-sys.path.insert(0, os.path.dirname(__file__) + '/../boatman')
+
+sys.path.insert(0,
+                os.path.abspath(__file__).rsplit(os.sep, 2)[0] + os.sep
+                + 'boatman')
+
 
 import boatman
 import localization as lcl

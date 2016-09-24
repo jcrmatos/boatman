@@ -89,23 +89,18 @@ def upd_status(cur_boat_pos: bool, left_items: List[str],
 
     conditions = {
         'win': right_items == list(lcl.ITEMS),
-        'wolf_ate_goat': all([lcl.WOLF in left_items, lcl.GOAT in left_items,
-                              cur_boat_pos == RIGHT])
-                         or
-                         all([lcl.WOLF in right_items, lcl.GOAT in right_items,
-                              cur_boat_pos == LEFT]),
-        'wolf_ate_goat': all([lcl.WOLF in left_items, lcl.GOAT in left_items,
-                              cur_boat_pos == RIGHT])
-                         or
-                         all([lcl.WOLF in right_items, lcl.GOAT in right_items,
-                              cur_boat_pos == LEFT]),
-        'goat_ate_pasture': all([lcl.GOAT in left_items,
-                                 lcl.PASTURE in left_items,
-                                 cur_boat_pos == RIGHT])
-                            or
-                            all([lcl.GOAT in right_items,
-                                 lcl.PASTURE in right_items,
-                                 cur_boat_pos == LEFT])
+        'wolf_ate_goat':
+            all([lcl.WOLF in left_items, lcl.GOAT in left_items,
+                 cur_boat_pos == RIGHT])
+            or
+            all([lcl.WOLF in right_items, lcl.GOAT in right_items,
+                 cur_boat_pos == LEFT]),
+        'goat_ate_pasture':
+            all([lcl.GOAT in left_items, lcl.PASTURE in left_items,
+                 cur_boat_pos == RIGHT])
+            or
+            all([lcl.GOAT in right_items, lcl.PASTURE in right_items,
+                 cur_boat_pos == LEFT])
     }  # type: Dict[str, bool]
 
     if conditions['win']:

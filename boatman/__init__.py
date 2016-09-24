@@ -21,7 +21,7 @@
 
 __author__ = 'Joao Carlos Roseta Matos'  # type: str
 __license__ = 'GNU General Public License v3 or later (GPLv3+)'  # type: str
-__version__ = '0.0.8'  # type: str
+__version__ = '0.0.9'  # type: str
 
 
 import datetime as dt
@@ -35,4 +35,4 @@ COPYRIGHT = ('Copyright 2009-' + str(dt.date.today().year) + ' '
 
 
 # add to PYTHONPATH, used by Sphinx doc system
-sys.path.insert(1, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))

@@ -338,7 +338,7 @@ def collect_to_do() -> None:
             text = f_in.readlines()  # type: Optional[List[str]]
         for line in text:  # type: str
             if '# ToDo: ' in line:
-                to_do_lst.append(filename.split(os.sep)[-1] + ': '
+                to_do_lst.append('* ' + filename.split(os.sep)[-1] + ': '
                                  + line.replace('# ToDo: ', '').lstrip())
 
     to_do_text = ''  # type: str

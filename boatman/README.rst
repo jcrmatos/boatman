@@ -35,8 +35,8 @@ A ordem de transporte é importante porque o Lobo come a Cabra e a Cabra come o 
 
 **To do**
 
-boatman.py: add sound
-boatman.py: gui version
+* boatman.py: add sound
+* boatman.py: gui version
 
 Installation and usage
 ----------------------
