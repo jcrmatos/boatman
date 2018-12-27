@@ -9,7 +9,7 @@ mypy-lang==0.5.0
 Pygments==2.3.1
 PyInstaller==3.4
 pylint==2.2.2
-pytest==2.9.2
+pytest==4.0.2
 pytest-cov==2.3.1
 Sphinx==1.4.6
 twine==1.8.1
