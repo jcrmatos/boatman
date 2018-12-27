@@ -3,7 +3,7 @@ check-manifest==0.37 # check
 colorama==0.4.1
 coveralls==1.5.1
 detox==0.18
-docutils==0.12
+docutils==0.14
 flake8==3.0.4
 mypy-lang==0.4.4
 Pygments==2.1.3
