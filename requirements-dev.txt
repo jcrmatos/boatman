@@ -14,3 +14,4 @@ pytest-cov==2.3.1
 Sphinx==1.4.6
 twine==1.8.1
 wheel==0.29.0
+setuptools>=78.1.1 # not directly required, pinned by Snyk to avoid a vulnerability
